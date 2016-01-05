@@ -261,6 +261,26 @@ P258: 	Web Sockets api https://developer.mozilla.org/en-US/docs/Web/API/WebSocke
 
 	etc.
 
+=============================================================================================
+p259 	SignalR
+	
+	SignalR is an open source asynchronous signaling library.
+	It is an abstraction over HTTP.
+	The SignalR library consists of a Server API + a client JavaScript library.
+	
+	It offers two programming models: 
+	1-Hubs 
+	2-Persistent Connection
+
+	It supports several Transport Models
+	-WebSockets
+	-Server-sent/EventSource
+	-Forever frames
+	-Long Polling
+
+	It is ditributed by means of a nuget package (SignalR)
+	
+
 
 	 
 	
