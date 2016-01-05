@@ -1,0 +1,297 @@
+Exception Handling
+
+P165:
+=======================================================================================
+Media Formatters - MIME types
+
+P168:	MediaTypeFormatter & BufferedMediaTypeFormatter base classes
+	Example of how to return a custom type such as csv by sending the right header
+	and registering a custom type formatter.
+	Accept: text/html,application/xhtml+xml,application
+=======================================================================================
+Data Access Patterns - Repository Pattern
+
+P171:   POCOs, Persistence Ingnorance PI
+P173: 	Generic Repository, One per business model
+
+P175:	objet Relational Impedance Mismatch - ORM
+	Granualrity, Inheritance, Identity, Association, Data Navigation 
+
+P178:	DB Concurrency. Pessimistic (read locks) and Optimistic (timestamp) concurrency
+	OptimisticConcurrencyException, TimeStampAttribute
+p179:   EntityObject base class. No persistence Ignorance in Model and DB First approches
+	Code First - PI with conventions >> Table Name = Class Name, Comun Name= Property
+	Name, PKey = (ClassName)Id, Default Connection String = DataContext class name
+p180:	Table 8-1 Code first data annotations
+P181:	DDD - Domain Driven Design + SOLID 
+=======================================================================================
+Security
+p193:	Security Tips - Validate input per layer - Use minimal permission accounts 
+	= Principle of Least Privilege- Reduce Surfice Area = Least Controller's meths
+	+ Disable unused services and features that the application does not need 
+p195:	Authentication & Authorization
+p196:	Windows Authentication <authentication mode = "Windows">
+p200:	the [AuthorizeAttibute] with User and Roles lists
+P201:	Forms Authentication => based on an encrypted HTTP cookie (AuthCookie)
+p202:	Setting up SSL in IIS
+p204:	Changing the membership provider in web.config <membership>
+p204:	AccountController and the [AllowAnonymous]
+p205:	AccountController.Login => Membership.ValidateUser() = validate credentials
+	=>FormsAuthentication.SetAuthCookie() = to create the user's security token
+p208: 	Login, Registern, ChangePassword action GET/POST and Ajax with antiforgery
+p209:	User.Identity.Name() and User.IsInRole() 
+Guarding against Attacks
+p210:	SQL injection 
+	=> Validation of input using whitelist i.e. Regex 
+	=> use LINQ to Entities as query composition does not rely on strings manipulation or concat.
+=======================================================================================
+p221:	ASP.NET 4 Mobile Features 
+	-1) Mobile Template with jQury.Mobile
+	-2) Display modes i.e. Index.cshtml, Index.iPhone.cshtml, Index.iPad.cshtml
+	-3) View Overriding Index.cshtml >> Index.Mobile.cshtml
+	-4) use jQuery.Mobile and PROGRESSIVE ENHANCEMENT
+p228:	jQury.Mobile data-role
+p229:	jQuery.Mobile data-filter 
+p230:	The view switcher _ViewSwitcher.cshtml and ViewSwitcherController
+p234: 	DisplayModeProvider.Instance.RequireConsistentDisplayMode=true
+	To disable the rendering of any non-mobile view a mobile device
+p235:	Adaptive rendering => 
+	LAYOUT VIEWPORT => contains the <html> tag and all the content
+	VISUAL VIEWPORT => 
+P236:	<meta name="viewport" content="width=device-width" />
+	to fit the VISUAL VIEWPORT to the border's frame device (most flexible and frequent)
+	<metaname="viewport"content="width=320px"/>
+	to fit the VISUAL VIEWPORT to fixed width => 
+	if the device's screen is larger than 320px  => user must zoom in
+	if the device's screen is smaller than 320px => user must zoom out
+p236:	Mobile Feature Detectionp
+p237:	Explicitely check for a supported feature 
+	=> directly with JS
+P238:	=> via CSS3 Media Queries i.e. @media only screen and (max-width: 800px){body{background-color:red;}}
+p239:	MVC 4 Display Modes Browser-Specific views
+p241:	Find out browser capabilities	
+	1-Request.Browser of type HttpBrowserCapabilities uses built-in definitions
+	2-51Degrees.mobi maintains an up-to-date bank of info on mobile devices
+====================================================================================
+Parallel, Async, Real-Time Data Ops
+
+p251:	Asynchronous controllers (AsyncController) - thread starvation
+p253:	the async/awayt keywords and the Task<TResult> pattern
+p254:	[AsyncTimeout(1000)]
+
+p254:	When to use an asynchronous controller
+	
+	Use synchronous action when 
+	-1 Simple and short running ops
+	-2 Simplicity is more important than efficiency
+	-3 there are CPU-intensive ops - async does not buy you anything in this case
+
+	Use asynchronous action when 
+	-1 the action is long running
+	-2 there is lots of IO or Network traffic
+	-3 WHEN THE USER REQUIRES THE ABILITY TO CANCEL A LONG-RUNNING OP
+
+
+P254:	Real-Time Asynchronous Communication
+
+	Models based on the HTTP request/response paradigm of short-lived connection
+	Problem with synch model - data gets stale
+	Problem with AJAX model - the user still need to trigger refresh
+
+p255:	Real-Time communication models
+p255:	HTTP Polling
+	It is a client-side implementation
+	It is a two-way communication mechanism.
+	
+	Mimiks a persistent connection to the server by timing AJAX requests on the clients
+	One techniques is to AJAX the server on handling the response from the previous call
+	This is equivalent to built-in fault tollerance
+	
+	It is very reliable and fail safe
+	It develop huge network traffic and server load regardless whether there is new data
+	can overload the server and cause DOS [Denial Of Service]
+	The main point of difference between this and Http long polling is that in the HTTP 
+	Polling the server closes the connaction to the client soon after sending the reply.
+
+	Time Diagram
+
+	Client		     Server
+
+	request t1 -------->
+		   <-------  response t1
+			     close connection
+	request t2 -------->
+		   <-------  response t2
+			     close connection
+	etc.
+
+p256:	HTTP long polling
+	It is a server-side implementation.
+	It is a two-way communication mechanism.
+	
+	The client browser makes AJAX request to the server to retrieve data.
+	If the data is available the server replies and closes the connection as per the 
+	traditional request/response model.
+	
+	However, the server keeps the connection to the client open if it cannot return 
+	data to the client immediately and closes it only when
+	-it can return the data
+	-on a timeout expiry 
+	-or when the connection is brocken.
+	
+	The incoming request is blocked on the server until a server event is raised to 
+	signal that it can continue. The client must initiate a new long polling request 
+	each time.
+
+	It is unreliable because connections tend to brake often.
+
+	Time Diagram
+
+	Client		     Server
+
+	request t1 -------->
+			     Server Idle
+			     Server Idle
+			     ....
+			     Server Event	
+		   <-------  response t1 + dt1
+			     close connection
+	
+        request t2 -------->
+			     Server Idle
+			     Server Idle
+			     ....
+			     Server Event
+		   <-------  response t2 + dt2
+			     close connection
+	etc.
+
+p257	Server-Sent Events aka EventSource	
+	It is a one-way communication mechanism - from server to client.
+
+	Similar to long polling as the server attempts to keep the connection to the client 
+	open if it cannot return the data immediately.
+
+	The differnce is that the server will try to maintain the connectin open even after 
+	the initial response is returned to the client as updates to the data initially requested
+	become available to the server.However, the client needs a new connection, that is a new
+	AJAX request if it needs to request other data or to sent new data to the server.
+	The server can then decide to return the response for any new client request on a new
+	connection or any existing one or both.
+	
+	The Server-Sent/EventSource Real-RealTime asynchronous communication relies on the 
+	standard JavaScript library *Event Source API* used to receive server-sent events
+	which is part of the largest HTML5 implementation.
+	
+  	*Event Source API*
+	https://developer.mozilla.org/en-US/docs/Web/API/EventSource
+
+	Most browser support *Event Source API* (not IE!)
+	
+
+	request t1 -------->
+			     Server Idle
+			     Server Idle
+			     ....
+			     Server Event	
+		  <-------  response t1 + dt1
+			     Server Idle
+			     Server Idle
+			     ....
+			     Server Event
+	          <-------  response t1 + dt2
+                             Server Idle
+			     Server Idle
+			     ....
+			     Server Event
+	   	  <-------  response t1 + dt3
+
+			
+                            The server uses the same connection until it is broken.
+
+
+P258: 	Web Sockets api https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API
+
+	WebSockets is an advanced technology that makes it possible to open an interactive 
+	communication session between the user's browser and a server. With this API, you 
+	can send messages to a server and receive event-driven responses without having to 
+	poll the server for a reply
+	--------------------------------------------------------
+	Converts standards HTTP request/response connections 
+        into 
+	bidirectional, full-duplex TCP communications channels
+	--------------------------------------------------------
+
+	More recent version also supports secure duplex ove tcp.
+
+	Most browsers support WebSocket API.
+	Browser support is the minimal requirement.
+	Antivirus software, firewalls and HTTP proxies can interfere with WebSocket API.
+
+	Time Diagram
+
+	Client		     	  Server
+
+	http request t1 :
+	can I uses WebSocket?		
+			-------->
+			<-------  http response t1 + dt1
+				  Yes, this is the Encrypted Key
+	=========================================================
+	tcp
+	this is my payload		
+			-------->
+			<-------  tcp ok
+	========================================================				
+        			  tcp	
+				  this is my payload		
+			<--------
+			--------->tcp ok  
+	=========================================================
+	tcp
+	this is my payload		
+			-------->
+			<-------  tcp ok
+	========================================================				
+        			  tcp	
+				  this is my payload		
+			<--------
+			--------->tcp ok - please close now!
+	=======================================================
+
+	etc.
+
+
+	 
+	
+        
+
+
+	
+	
+	
+
+
+	
+	
+
+	
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
