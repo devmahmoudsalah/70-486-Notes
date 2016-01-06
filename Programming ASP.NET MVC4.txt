@@ -281,25 +281,54 @@ p260	1-Persistent Connection
 	
 	On the Server
 	
-	Create a class inheriting from SignalR.PersistentConnection
-	Override SignalR.PersistentConnection.OnReceivedAsynchS
-	Register the custom connection in the routing table RouteTable.Routes.MapConnection<EbuyCustomConnection>("echo","echo/{*operation}")
+	Create a class inheriting from SignalR.PersistentConnection.
+	Override SignalR.PersistentConnection.OnReceivedAsynch.
+	Register the custom connection in the routing table RouteTable.Routes.MapConnection<EbuyCustomConnection>("echo","echo/{*operation}").
+	Regiter all the connection Ids you need for the app.
+	The SignalR.PersistentConnection.OnReceivedAsynch uses a connectionId matching the registerd connection in the routing table.
+
+	Server => Client
+	The PersistentConnection.Connection property as methods to send data to any connected client. 
 
 	On the client
 	
-	Use jQuery you'll need it to grab teh connection object.
+	Use jQuery you'll need it to grab the connection object.
 	Add a reference to the required SignalR JavaScript library <scriptsrc="Scripts/jquery.signalR-0.5.0.min.js"type="text/javascript"></script>	
-	subscribe to the connection object received event and provide a callback.
+	subscribe to the connection object (by its Id) received event and provide a callback.	
 	The callback parameter is the payload.
 	Start the connection after subscribing.
-	To send data to teh server over teh connection use connection.send(payload).
-	The payload will reach the server's SignalR.PersistentConnection.OnReceivedAsynchS.			
-	-------------------------------------------------------------
+	
+	Client => Server
+	To send data to the server over teh connection use connection.send(payload).
+	The payload will reach the server's SignalR.PersistentConnection.OnReceivedAsynch.
+	Subscribe to any other connection object by its Id and follow the same steps.			
+	--------------------------------------------------------------------------------------
 p261	2-Hubs 
 
+	This model does not require to register a sepcial route on the Server side.
 	
+	On the Server
+	
+	Create a class that inherits from SignalR.Hub
+	Add a method to send messages with signature >> public void SendMessage(stringmessage)	
+	Any hub on the server side automatically register a special route "/signalr"
+
+	Server => Client	
+	In this method the server uses the Clients dynamic object to add dynamic methods i.e. Clients.displayMessage(message);
+	This means that Clients.displayMessage(message) sends message to any of the clients connected to the Hub.
+	Client will receive the payload "message" if they subscribe to it by providing a callback function on for the same method on the proxy.
+
+        On the Client
+	Use jQuery you'll need it to grab teh connection object.
+	Include the SignalR JavaScript library <scriptsrc="Scripts/jquery.signalR-0.5.0.min.js"type="text/javascript"></script>
+	*Include teh SignalR JavaScript library for the Huib model <scriptsrc="/signalr/hubs"type="text/javascript"></script>
+	Use jQury to grab a reference to Hub proxy on the connection object varproxy=$.connection.ebuyCustomHub;
+	Use the proxy to register a callback for the dynamically defined methods on the server side i.e. proxy.displayMessage=function(message){..do sth with "message" payload..}
+	Start the Hub on the connection objects i.e. $.connection.hub.start();
+	The client can communicate data to the server like this connection.sendMessage("Hello SignalR!");
 	-------------------------------------------------------------
-	
+
+p262:	
 	
 
 
