@@ -1,3 +1,92 @@
 Application Architecture Design
 
-p19:	
+===================================================================================
+Chapter 1 - Design the Application Architecture
+
+p19-Plan the application Layers
+
+An application layer is a set of functionality implemented in code such as that as
+grouP it works togeher as COMMON CONCERN.
+
+For example
+
+The UI layer concern is to present info and interact with the user.
+The data layer concern is to model the data in the application. 
+The business layer concern is to implement the business requirements.
+The persistence layer is to implement the persistance logic.
+
+==================================
+p20	STEP1
+Plan the data access model first!
+==================================
+
+1-	Use a ORM such as EntityFramework
+This is best when the data model is closely mapped to the data in teh database. 
+This approach often binds teh app to a specific type of datastore i.e. EF to SQL Server.
+
+Entity Framework provides three approches
+a-code first 	- best for new databases
+b-model first	-best for new databases where the database schema is more important than the data models.
+c-database first-bset used with existing databases
+
+2- 	Write your own component to manage the interaction with the database i.e. SQL or NoSQL
+You'll have to manage the connection 
+Preferred hwen the data as it is stored is significantly different from your data model.
+Preffered when the data is not (purely) relational.
+You can use ADO.NET to access the database.
+Minimises teh impact of the database schema on the application.
+
+p23 Data access from within the code with Entity Framework
+
+Use DBContext but not direclty!
+
+Create an ABSTRACTION LAYER between the business logic layer where your view models
+live and the the data access layer where the code makes use of DbContext to talk to 
+the database. The ABSTRACTION LAYER is implemented as Repository Pattern and it is 
+called PERSISTENCE LAYER.
+
+The repositoty pattern is a good for testing because can be easily mocked.
+Often ythe repository is defined as an Interface hence it is possible to have mock impls.
+
+As the persistence layer sits in between the BL and the DM it it decople the changes 
+to either layers from the other i.e. if the database changes than the BL can be left
+alone as long as the repo returns teh same business objects (VMs).
+
+========================================================================
+p24	STEP2
+Plan SoC - Separation of Concern 
+=> N-tier applications => Loose coupling => reduce layers interdependancy
+=> MVC implements SoC and is based on convention over configuration 
+=========================================================================
+
+p26 Use MVC appropiately 
+
+Model (ViewModel not the Data Model which is often called Domain)
+Handle the business logic
+Is ignorant of the view
+
+The are three main approaches to building the model layer. 
+
+The data model approach 
+The data models are used directly by the view.
+
+View Model approach  
+Use view models to expose to the Views
+View Models can aggregate multiple data models and add business rules
+
+Input model!
+The input model faithfully represents the data being uploaded to the 
+server from the client with each individual HTTP request and uses 
+MODEL BINDING to capture the user input.
+A single view model can span several domain objects.
+The difference between the input model and the view model approach
+is that in the former all the domain object are handled within a single 
+controller.
+
+
+p36 - Objective Summary
+
+p94 - Answers
+
+===================================================================================
+Chapter 2

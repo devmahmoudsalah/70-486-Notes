@@ -328,10 +328,40 @@ p261	2-Hubs
 	The client can communicate data to the server like this connection.sendMessage("Hello SignalR!");
 	-------------------------------------------------------------
 
-p262:	
-	
+p263:	SignalR can be configured.
+	During application startup i.e.
+	GlobalHost.Configuration.ConnectionTimeout=TimeSpan.FromSeconds(60);
+	The Configuration object will be an implementation of IConfigurationManager.
+	IConfigurationManager
+		ConnectionTimeout	=>How long the an idle connection stays open
+		DisconnectionTimeout 	=>Time to raise a disconnected event to clients
+		HeartBeatInterval	=>How often to chek the state of teh connection 
+		KeepAlive		=>Time interval to send a keep alive ping to an idle connection
+					  Keep alive makes ConnactionTimeout irrelevant.
+	---------------------------------------------------------------------------------------
+p263:	Configure IIS for SignalR to increase the number of concurrent requests
 
+	1-Configure IIS to support higher than default concurrent connections
+	From command line
+	%windir%\System32\inetsrv\
+	ppcmd.exe set config /section:serverRuntime /appConcurrentRequestLimit:100000
 
+	2-Configure ASP.NET 4.0 to support in excess of the default 5000 CONNECTION PER cpu
+	%windir%\Microsoft.NET\Framework\v4.0.30319   for   32-bit
+	%windir%\Microsoft.NET\Frame-work64\v4.0.30319 for 64-bit operating systems
+	In aspnet.config
+	<applicationPool maxConcurrentRequestsPerCPU="20000"/>
+
+	3-Configure ASP.NET 4.0 for a larger size throttling queue tahn the default 
+	ASP.NET 4.0 will queue (throttle) the request in exxcess of maxConcurrentRequestsPerCPU.
+	When the queue fills up the connections are lost.
+	To control the size ofthe throttling queue 
+	%windir%\Microsoft.NET\Framework\v4.0.30319   for   32-bit
+	%windir%\Microsoft.NET\Frame-work64\v4.0.30319 for 64-bit operating systems
+	machine.config
+	<processModelautoConfig="false"requestQueueLimit="250000"/>
+================================================================================================
+p265	Chapter 12 Caching
 	 
 	
         
