@@ -362,6 +362,145 @@ p263:	Configure IIS for SignalR to increase the number of concurrent requests
 	<processModelautoConfig="false"requestQueueLimit="250000"/>
 ================================================================================================
 p265	Chapter 12 Caching
+
+	Types of caching available in ASP.NET
+
+P266	Server side caching
+	Limit the time necessary to produce a response.
+	Limit the number of CPU cycles per request.
+	Limit call to services.
+	Limit roundtrips to data storage.
+	Limit teh amount of server resources per request.
+
+p266	Client side caching
+	Avoid t make any request to the server if at all possible.
+	Helps with reducing the load on the server.
+	Helps with reducing the load on the network.
+
+p266	Server side caching techniques
+	These are almost all provided within the ASP.NET Framework rather than MVC.	
+
+p267	Request-scoped caching - System.Web.HttpContext.Items 	
+	This HttpContext instance is available on the server side per each request.
+	The Items property is dictionary.
+	The HttpContext lives for teh lifetime of teh request and so Items.
+	Use Items to store data relevant for the current request.
+	i.e. HttpContext.Items["IsFirstTimeUser"] = true;
+	It is strongly typed - must cast when reading from it.
+
+p268	User-scoped caching via ASP.NET Session State
+	This caching mechanism allows to store info between requests.
+	The info lifespan is per session and per-user basis.
+	Session can be enabled on disabled on IIS via Web.Config.
+	The duration of the session can be changed via Web.Config (20' default).
+	<system.web><sessionStatetimeout="30"/></system.web>
+	Session state data must be persisted in some way the options are
+	-in memeory (default)
+	-SQL Server database
+	-Custom provider.
+	How it works : HttpContex.Session["username"] = "Jo";
+	string = (string)HttpContext.Session["username"]
+	Session expires on time or when the user closes the browser.
+
+p268	Application-scoped caching
+	HttpContext.Application is an instance of HttpApplicationState.
+	This is an untyped dictionary of objects.
+	The data lifespan is that of the IIS worker process.
+	Use only when the the data is the same accorss worker processes.
+
+p269	The ASP.NET Cache (better than HttpContext.Application)
+	This is a better alternative to store application-level data.
+	System.Web.Cache >> HttpContext.Cache.
+	It is just like any othe of the untyped dictionaries above.
+	ASP.NET raises events when items in HttpContext.Cache expires or are removed.
+	ASP.NET manages the lifetime of the items in HttpContext.Cache.
+	
+	Can set the expiration model and time per item.
+	-expiration => when the item is added to HttpContext.Cache it is specified
+	sliding or absolute expiration. 
+			
+	Can specify dependency on other objects
+	i.e. 
+	-files on disk when are removed or modified.
+	-other item in HttpContext.Cache specified by its key in the dictionary.
+	-SQL. Updates to a specific table.	
+	-Custom. System.Web.Caching.Cache.Dependency can be inherited from and you 
+	 can provide the logic for the event to be raised.
+	-Aggregate. Allows to combine any of the above.
+
+	Removal of items from Http.Cache
+	-a chanche item's dependancy changes and invaliadte the item.
+	-Scavanging. The server runs low on resources and must reclaim memory
+
+	The CancheItemRemovedCallbackhandles the removal event.
+
+p270	The Output Cache
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	 
 	
         

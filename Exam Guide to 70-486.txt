@@ -66,6 +66,7 @@ Handle the business logic
 Is ignorant of the view
 
 The are three main approaches to building the model layer. 
+https://www.simple-talk.com/dotnet/asp.net/the-three-models-of-asp.net-mvc-apps/
 
 The data model approach 
 The data models are used directly by the view.
