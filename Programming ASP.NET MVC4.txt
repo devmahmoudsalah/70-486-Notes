@@ -365,7 +365,11 @@ p265	Chapter 12 Caching
 
 	Types of caching available in ASP.NET
 
+-----------------------------------------------
 P266	Server side caching
+	Data caching  - data is cached not HTML
+-----------------------------------------------
+	
 	Limit the time necessary to produce a response.
 	Limit the number of CPU cycles per request.
 	Limit call to services.
@@ -434,7 +438,18 @@ p269	The ASP.NET Cache (better than HttpContext.Application)
 
 	The CancheItemRemovedCallbackhandles the removal event.
 
+-----------------------------------------------
 p270	The Output Cache
+	In this type of caching HTML is cached.
+-----------------------------------------------
+
+p271	[OutputCacheAttribute(Duration=60, VaryByParam="name")]
+	
+	This action filter tells the controller to add the result of the controller
+	to the output cache.
+	The Duration sets for how long the output cache is held in memory.
+	The VaryByParam 
+	
 
 
 
