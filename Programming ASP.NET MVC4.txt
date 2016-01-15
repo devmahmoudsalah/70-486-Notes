@@ -447,11 +447,90 @@ p271	[OutputCacheAttribute(Duration=60, VaryByParam="name")]
 	
 	This action filter tells the controller to add the result of the controller
 	to the output cache.
-	The Duration sets for how long the output cache is held in memory.
-	The VaryByParam 
 	
+	Configuration of [OutputCacheAttribute()] is possible by means of parameters
+	
+(p272)  Tab 12-2
+        ------------------------------------------------------------------------------
+	CacheProfile* 		The name of the output cache policy to use
+	Duration* 		The amount of time in seconds to cache the content	
+	Enabled*		Enables/disables output cache for the current content	
+	LocationThe 		location of where to cache the content	
+	NoStore*		Enables/disables HTTP Cache-Control
+	SqlDependency		The database and table name pairs that the cache entry depends on		
+	VaryByContentEncoding	A comma-delimited list of character sets (content encodings) that the output cache uses to varythe cache entries
+	VaryByCustom		A list of custom strings that the output cache uses to vary the cache entries
+	VaryByHeader		A comma-delimited list of HTTP header names used to vary the cache entries	
+	VaryByParam*		A semicolon-delimited list of form POST or query string parameters that the output cache uses tovary the cache entry
+        ------------------------------------------------------------------------------
+	
+	-Location : Any(default), Client, Downstream, Server, None
+	-NoStore=true/false
 
+p271	-Location=Any 
+	it's ok in most scenarios, but those with some data on the page that must 
+	change with the user identity i.e. teh user name. If Any is used all users 
+	get the user name of the first user that caused the page to be cached.
 
+	-Caching only on the user's browser
+	-Location=OutputCacheLocation.Client, NoStore=true
+	This caches the page on the user's browser and fixes the propblem above.
+
+	The other options for Locations are less common.	
+	
+p272 	The VaryByParam 
+	[OutputCache(Duration = int.MaxValue, VaryByParam = "id")]
+
+	In this example ASP.NET caches the output per each id value found in the query 
+	string. Without VaryByParam = "id" the server would cache only the detail view
+	of the first request coming i.e. id=101 in and would keep serve the detail view 
+	for id=101 to any subsequent request.
+
+	VaryByParam = "none"
+	ASP.NET caches the page the firts time it is rendered and keep serving it 
+	indefinitely. This is all right with static content.
+
+	VaryByParam = "*"
+	ASP.NET adds a specific cached version of a page any time a new request comes in 
+	with at least one of the parameter different from any of the query for which a 
+	page has already been cached. 
+	This option can cause significant memory load.
+
+	The Duration sets for how long the output cache is held in memory.
+
+p273	Output cache profiles
+	http://www.asp.net/mvc/overview/older-versions-1/controllers-and-routing/improving-performance-with-output-caching-cs
+
+	An alternative to using [OutputCacheAttibute] on single controller actions.
+	It is possible to create a global output caching rule in web.config.
+	Better for maintainability.
+	Applying changes to teh output caching policy no longer require recompiling and redeploying!
+	
+	
+	For example, the following ProductCache profile caches a page’s content for an hour
+	and varies each cache by the "id" request parameter:
+	<caching><outputCacheSettings><outputCacheProfiles><addname="ProductCache"duration="3600"varyByParam="id"/></outputCacheProfiles></outputCacheSettings></caching>
+
+	The cache profile can then be applied to a controller action method by decorating it
+	with the attribute [OutputCache(CacheProfile="Cache1Hour")] where the name of the 
+	profile is the same specified in the web.config.
+
+p273 	Donut Caching - most of the html on the page should be cached but section(s) 
+
+	It is possible to cache an html leaving out some of its sections i.e. the area
+	that displays user's specific information. For a log in page do not use solution 
+	VaryByParam = "id" because this causes a complete page to be cached per each user!
+		
+	-In Web Forms vie engine 
+	Donut caching is usppported directly via the tag asp:Substitution.
+	<asp:Substitution runat="server"MethodName="GetUserName"/>
+	Then define a method "GetUserName" on the server that returns the HTML that is not
+	cached.
+
+	-In Razor view engine
+	http://www.adamriddick.com/2013/06/asp-net-mvc4-donut-caching-donut-hole-caching/
+	There's no direct support.
+	
 
 
 
