@@ -524,14 +524,42 @@ p273 	Donut Caching - most of the html on the page should be cached but section(
 	-In Web Forms vie engine 
 	Donut caching is usppported directly via the tag asp:Substitution.
 	<asp:Substitution runat="server"MethodName="GetUserName"/>
-	Then define a method "GetUserName" on the server that returns the HTML that is not
-	cached.
+	Then define a static callback method "GetUserName" on the server that returns the HTML 
+	that is not cached.
 
 	-In Razor view engine
-	http://www.adamriddick.com/2013/06/asp-net-mvc4-donut-caching-donut-hole-caching/
-	There's no direct support.
-	
 
+	http://www.adamriddick.com/2013/06/asp-net-mvc4-donut-caching-donut-hole-caching/
+	
+	There's no direct support but there is a NuGet package
+	https://github.com/moonpyk/mvcdonutcaching
+	
+	It can be done by means of the HttpResponse class.  
+	Flush out an extension method of the HtmlHelper class such as
+
+	public static object Substitution(this HtmlHelper html,CacheCallback ccb)
+
+	together with the delegate CacheCallback below
+
+	public delegate string CacheCallback(HttpContextBase context);
+
+  	In HtmlHelper.Substitution the html param can be used to access the HttpResponse
+	
+	html.ViewContext.HttpContext.Response.WriteSubstitution(...)
+
+	WriteSubstitution takes a delegate which can be 
+
+	c=>HttpUtility.HtmlEncode(ccb(newHttpContextWrapper(c))
+
+	Notice that this will cause the ccb callback to be invoked bassing the HttpContext c
+	to it.
+
+	In a view use the Html helper in your markup
+
+	@Html.Substitution(context => context.User.Identity.Name)
+
+	The result is that the view is cached except for the html returned by the 
+	html.ViewContext.HttpContext.Response.WriteSubstitution(...)
 
 
 
