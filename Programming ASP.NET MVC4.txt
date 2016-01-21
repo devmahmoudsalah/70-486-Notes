@@ -514,7 +514,7 @@ p273	Output cache profiles
 	The cache profile can then be applied to a controller action method by decorating it
 	with the attribute [OutputCache(CacheProfile="Cache1Hour")] where the name of the 
 	profile is the same specified in the web.config.
-
+	----------------------------------------------------------------------------------
 p273 	Donut Caching - most of the html on the page should be cached but section(s) 
 
 	It is possible to cache an html leaving out some of its sections i.e. the area
@@ -560,7 +560,37 @@ p273 	Donut Caching - most of the html on the page should be cached but section(
 
 	The result is that the view is cached except for the html returned by the 
 	html.ViewContext.HttpContext.Response.WriteSubstitution(...)
+	----------------------------------------------------------------------------------
+p275  	Donut Hole Caching & child actions
 
+	This is the inverse of DoNut caching. In Donut caching most of the HTML in a page
+	is cached and some smaller UI details are written to the output stream via dedicated 
+	static methods which are invoked at each new request for the same page.
+
+	In Donut Hole caching instead only smaller parts of the HTML for a requested page is 
+	cached. This is useful when the page embeds large lists of static data.
+
+	------------------------------------------------------------------------------------
+	http://stackoverflow.com/questions/12530016/what-is-an-mvc-child-action
+	http://haacked.com/archive/2009/11/18/aspnetmvc2-render-action.aspx/
+	------------------------------------------------------------------------------------
+
+	Contrary to Donut caching, Donut Hole caching has direct support in MVC by means 
+	of child actions.
+	
+	An action in a controller is a child action when is decorated with the attribute
+	[ChildActionOnly]. This attributes means that the action method cannot be routed 
+	to by MVC directly that is it is no possible to invoke child actions by means of 
+	an URL.Child actions can only be invoked from a Parent View. In order to invoke a 
+	child action from a view you use @Html.Action("ChildActionName"). This action will 
+	then execute and render its output in the master view at the location of the call 
+	@Html.Action("ChildActionName"). Child action execute in the context of the same 
+	Http request as that for the parent view they are invoked from.
+
+	------------------------------------------------------------------------------------
+p277	Distributed Caching
+
+	
 
 
 
