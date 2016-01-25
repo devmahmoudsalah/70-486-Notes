@@ -587,8 +587,35 @@ p275  	Donut Hole Caching & child actions
 	@Html.Action("ChildActionName"). Child action execute in the context of the same 
 	Http request as that for the parent view they are invoked from.
 
-	------------------------------------------------------------------------------------
+	--------------------------------------------------------------------------------------
 p277	Distributed Caching
+
+	It is an extension or the traditional caching techniques by which data for a session 
+	or from a database is stored in a central location and made available to all instances 
+	of an application. This is necessary i.e. in the web farm scenario where a particular 
+	instance of an application may return to a different server on each request. 
+	Without distributed caching the server may have to recreate the same data that was 
+	created for teh same client on a previous request but on another server. This is 
+	clearly inefficient and slower than caching the relevant data for all the servers of the
+	farm.
+	
+
+	There are three metrics that are improved by distributed caching
+	
+	-Performance - higher serving rate and less resources i.e. queries to teh SQL Server
+	 Better read performance beacause servers do not need to recreate data that already 
+	 exists all the time.
+	
+	-Scalability - more flexibility
+	 It is easy to add more capacity when necessary. For example, under load a server 
+	 can be added to the cluster and then removed when the load is lower. 
+
+	-Redundancy -Failover
+	 If one server fails the data for the session remains in the distributed cache and 
+	 the session is not lost. Another server can pick up the request of the same client
+	 after failure of the server. 
+
+	
 
 	
 
