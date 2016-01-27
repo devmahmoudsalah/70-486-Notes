@@ -607,6 +607,9 @@ p277	Distributed Caching
 	 exists all the time.
 	
 	-Scalability - more flexibility
+	------------------------------------------------------------------------------------
+	https://msdn.microsoft.com/en-us/library/ee677312(v=azure.10).aspx
+	------------------------------------------------------------------------------------
 	 It is easy to add more capacity when necessary. For example, under load a server 
 	 can be added to the cluster and then removed when the load is lower. 
 
@@ -615,9 +618,114 @@ p277	Distributed Caching
 	 the session is not lost. Another server can pick up the request of the same client
 	 after failure of the server. 
 
-	
+p281	Distributed server side Caching solutions from Microsoft
 
+	AppFabric (replaces Velocity)
+
+	-an extension of Windows Server providing
+	-enhanced hosting
+	-enhanced management
+	-enhanced caching capabilities as distributed in-memory object cache
 	
+	https://msdn.microsoft.com/en-us/library/ee677312(v=azure.10).aspx
+	https://msdn.microsoft.com/en-us/library/ff383731(v=azure.10).aspx
+	
+	In relation to the enhanced caching capabilities.
+	Windows Server AppFabric extends Windows Server to provide enhanced hosting, management, 
+	and caching capabilities for Web applications and middle-tier services.
+	AppFabric caching features can help scale your .NET applications easily and inexpensively 
+	by allowing you to combine the memory capacity of multiple computers into a single unified 
+	cache cluster.
+
+==================================================================================================
+p282	Client-Side Caching Techniques 
+
+	The process is simple: anytime you access a web page, the browser checks the local disk to 
+	see if it has local copies of any files that are part of the page. If not, it downloads the 
+	resources from the server. For the first visit to a page, this amounts to everything.
+	The browser caches the resources by storing them locally on the hard disk in a pre-allocated
+	area of predefined size.  The browser takes care of clearing out old items and managing the 
+	resources without any intervention or input required from the user.
+	
+	There are several issuses with client-side caching such as bugs, security, lack of control.
+	
+	-App Cache
+	HTML5 specification aims to eliminate differences in the mechanism of client-side caching.
+
+	-------------------------------------------------------------------------------------------
+	Freshness, Validation, Invalidation
+	These three factors control the caching mechanism on the browser and they all are dependent 
+	on the HTTP headers in the request
+	-------------------------------------------------------------------------------------------
+
+	===========================================================================================
+ 	-Freshness
+	This can be controlled by both the server and the client.
+	It is used to detetermine whether a specific responce can be provided to the client without 
+	a round trip to teh server. 
+	
+	Response Headers and Browser Directive
+	
+	- Expires
+	In the header sent by the server to the client it is the date when the response document becomes 
+	stale. 
+	
+	- Cache-Control: max-age 
+	directice that instructs the client cache how long, in seconds, to consider the response 
+	fresh.	
+
+	//In the server side code 	
+	//set the cache control header to public to let the browser cache the response if they want to
+	Response.Cache.SetCacheability(HttpCacheability.Public);
+	//set the the Cache-Control directive to a set time	
+	Response.Cache.SetMaxAge(DateTime.Now.AddMinutes(20));
+	//set the Expire response header
+	Response.Cache.SetExpires(DateTime.Parse("11:00:00PM"));
+
+	============================================================================================
+p283	-Validation
+	What happens when a response becomes stale, that is it is no longer fresh?
+	A response might be no longer fresh but that does not always mean that it is not reusable.
+	This depends on whether the response has been modified on the server.
+
+	Response Headers and Browser Directive
+
+	Last-Modified response header / If-Modified-Since request header
+	----------------------------------------------------------------
+	If the response has the Last-Modified header the client can request the response using the 
+	header If-Modified-Since. This mechanism allows the client to check whether the response's
+	changed on the server.
+
+	//In the server code
+	//Sets the Last-Modified HTTP header to the DateTime value 
+	supplied.Response.Cache.SetLastModified(DateTime.Parse("1/1/2012 00:00:01AM"));
+	
+	ETag (Enitty Tag) - a more robust approach
+	---------------------------------------------------------------
+	//In the server side code
+	//Sets the ETag HTTP header to the specified 
+	string.Response.Cache.SetETag("\"someuniquestring:version\"");	
+	
+	===========================================================================================	
+p283	-Invalidation
+	
+	Server side resources might change as a consequence of updates such as those caused by HTTP 
+	verbs POST, PUT, DELETE. When a URL on the server is recepient of an HTTP request with such 
+	verbs the response is invalidated.
+
+	===========================================================================================
+p283	HTML5 App Cache
+
+	The HTML 5 specification defines the ApplicationCache (or AppCache) API to givedevelopers 
+	direct access to the local browser content cache. 
+	An application will be able to make use of the HTML5 App Cache specification on modern browsers
+	with the proviso that the following steps are taken.
+	-------------------------------------------------------------------------------------------
+	1. Define the manifest.(.manifest extension, CACHE MANIFEST first line, # version 1.x)
+	   In the manifest you list the *.html, *.css, *.js documents that you want to cache. 
+	2. Reference the manifest.
+	3. Serve the manifest to the user.	
+	-------------------------------------------------------------------------------------------	
 
 
 
