@@ -722,12 +722,64 @@ p283	HTML5 App Cache
 	with the proviso that the following steps are taken.
 	-------------------------------------------------------------------------------------------
 	1. Define the manifest.(.manifest extension, CACHE MANIFEST first line, # version 1.x)
-	   In the manifest you list the *.html, *.css, *.js documents that you want to cache. 
-	2. Reference the manifest.
-	3. Serve the manifest to the user.	
-	-------------------------------------------------------------------------------------------	
+	   In the manifest some keywords are used at the beginning of each section such as
+	   # resources that are cached client-side after the first trip to the serve 
+	   CACHE: 
+	   *.html 
+ 	   *.css, 
+	   *.js, 
+           *.ico 
+	   NETWORK: login.asmx # what you never whant to cache and that must laways fetched from the server
+	   FALLBACK: /Home/Index.html /index.html 
 
+	2. Reference the manifest by using the manifest attribute of the <html>
+	   The browser si instructed to download the manifest file. 
+	   <!DOCTYPE html><html manifest="site.manifest">...</html>           		           
 
+	3. Serve the manifest to the user. This requires the use of the appropriate MIME that in 
+	   ASP.NET is set via the ContentType of the Response.
+   	   Response.ContentType="text/cache-manifest";
+	-------------------------------------------------------------------------------------------
+
+	When App Cache is enabled on the client browser, it will fetch resources from the server when
+
+	1. The user clears the cache.
+	2. The myapplication.manifest is altered on the server in any way.
+	3. The cache is updated programmatically by JavaScript in the browser.
+	===========================================================================================
+p286	HTML5 Local Storage - cookies improved!
+	http://stackoverflow.com/questions/19867599/what-is-the-difference-between-localstorage-sessionstorage-session-and-cookies
+
+	This specification is fro browsers to support an off-line storage mechanism.
+	There are not size limits as for the case of cookies, thus large amnount of data can be stored.
+	There are two local storage endpoints.
+
+	Local Storage 
+	The data stored via this endpoint is stored indefinitely.	
+	5MB on most browsers by default according to specs. The app can request more and the browser will 
+	prompt the user to accept or decline.	
+	
+	// test whether the browser support HYML5 local storage
+	functionIsLocalStorageSupported(){try{return'localStorage'inwindow&&window['localStorage']!==null;}catch(e){returnfalse;}}
+
+	// test for space - QuotaExceededError
+	localStorage.remainingSpace()
+ 
+	// the bracketed version works too..
+	// store stufff in the dictionary
+	localStorage.setItem("userName","john");
+	localStorage.setItem("age",32);
+	
+	localStorage.removeItem("userName");
+
+	//retrieve from local storage - must parse!
+	varuserName=localStorage.getItem("userName");
+	varage=parseInt(localStorage.getItem("age"));
+	
+	localStorage.clear();
+	
+	Session Storage
+	The data stored via this endpoint is erased at the end of the user session - the browser is closed.
 
 
 
